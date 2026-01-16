@@ -1,0 +1,257 @@
+import { LogOut, Sparkles, Loader, AlertTriangle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { useState, useEffect } from 'react';
+import { analyzeTransactionsWithGemini, type AIInsight } from '../utils/geminiAnalysis';
+
+const chartData = [
+  { name: 'Income', value: 45000, color: '#10b981' },
+  { name: 'Expense', value: 50000, color: '#ef4444' },
+];
+
+// Mock transaction data for AI analysis
+const mockTransactions = [
+  { date: '01-03-2024', description: 'Salary - March', amount: 45000, type: 'credit' as const, balance: 52300 },
+  { date: '02-03-2024', description: 'Rent Payment', amount: -18000, type: 'debit' as const, balance: 44300 },
+  { date: '04-03-2024', description: 'Credit Card EMI', amount: -12500, type: 'debit' as const, balance: 31800 },
+  { date: '07-03-2024', description: 'Grocery Store', amount: -3450, type: 'debit' as const, balance: 28350 },
+  { date: '10-03-2024', description: 'Online Subscription', amount: -999, type: 'debit' as const, balance: 27351 },
+  { date: '12-03-2024', description: 'Cash Withdrawal', amount: -5000, type: 'debit' as const, balance: 22351 },
+];
+
+export default function Insights() {
+  const navigate = useNavigate();
+  const [aiInsights, setAiInsights] = useState<AIInsight | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAIInsights = async () => {
+      setLoading(true);
+      try {
+        const insights = await analyzeTransactionsWithGemini(mockTransactions);
+        setAiInsights(insights);
+      } catch (error) {
+        console.error('Error fetching AI insights:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAIInsights();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#0a0f1e] text-white">
+      {/* Header */}
+      <div className="flex justify-between items-center px-6 py-4 bg-[#0f172a]">
+        <h1 className="text-lg">Financial Risk Radar</h1>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className="text-blue-500 hover:text-blue-400 transition-colors text-sm"
+          >
+            ← Back to Dashboard
+          </button>
+          <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <div className="p-8">
+        {/* AI Powered Header */}
+        <div className="mb-8 flex items-center gap-3">
+          <Sparkles className="w-8 h-8 text-purple-500" />
+          <div className="flex-1">
+            <h2 className="text-2xl">AI-Powered Financial Insights</h2>
+            <p className="text-sm text-gray-400">Powered by Google Gemini AI</p>
+          </div>
+          <button 
+            onClick={() => navigate('/risk-transactions')}
+            className="bg-red-600/20 hover:bg-red-600/30 text-red-500 border border-red-500/30 px-4 py-2 rounded-lg transition-colors text-sm flex items-center gap-2"
+          >
+            <AlertTriangle className="w-4 h-4" />
+            View 8 Flagged Transactions
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <Loader className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
+              <p className="text-gray-400">Analyzing your financial data with AI...</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* AI Summary */}
+            {aiInsights && (
+              <div className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 border border-purple-500/30 rounded-xl p-6 mb-6">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="w-5 h-5 text-purple-400 mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-lg mb-2 font-medium">AI Analysis Summary</h3>
+                    <p className="text-gray-300 text-sm leading-relaxed">{aiInsights.summary}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Charts and Analysis */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Income vs Expense Chart */}
+              <div className="bg-[#0f172a] rounded-xl p-6">
+                <h3 className="text-lg mb-6">Income vs Expense</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData}>
+                    <XAxis 
+                      dataKey="name" 
+                      stroke="#6b7280"
+                      tick={{ fill: '#9ca3af' }}
+                    />
+                    <YAxis 
+                      stroke="#6b7280"
+                      tick={{ fill: '#9ca3af' }}
+                    />
+                    <Bar 
+                      dataKey="value" 
+                      fill="#10b981"
+                      radius={[8, 8, 0, 0]}
+                    >
+                      {chartData.map((entry, index) => (
+                        <rect key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-6 grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Total Income</p>
+                    <p className="text-2xl text-green-500">₹45,000</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Total Expense</p>
+                    <p className="text-2xl text-red-500">₹50,000</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Risk Factors */}
+              {aiInsights && (
+                <div className="bg-[#0f172a] rounded-xl p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <h3 className="text-lg">AI-Detected Risk Factors</h3>
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                  </div>
+                  <ul className="space-y-4">
+                    {aiInsights.riskFactors.map((factor, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="text-red-500 mt-1 text-xl flex-shrink-0">•</span>
+                        <p className="text-sm text-gray-300">{factor}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Spending Breakdown */}
+              <div className="bg-[#0f172a] rounded-xl p-6">
+                <h3 className="text-lg mb-6">Spending Breakdown</h3>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-gray-300">EMI Payments</span>
+                      <span className="text-sm">₹28,350 (63%)</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div className="bg-red-500 h-2 rounded-full" style={{ width: '63%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-gray-300">Daily Expenses</span>
+                      <span className="text-sm">₹12,400 (28%)</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div className="bg-orange-500 h-2 rounded-full" style={{ width: '28%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-gray-300">Subscriptions</span>
+                      <span className="text-sm">₹2,250 (5%)</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '5%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-gray-300">Savings</span>
+                      <span className="text-sm">₹3,600 (8%)</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '8%' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Spending Patterns */}
+              {aiInsights && (
+                <div className="bg-[#0f172a] rounded-xl p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <h3 className="text-lg">AI-Detected Spending Patterns</h3>
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                  </div>
+                  <ul className="space-y-3">
+                    {aiInsights.spendingPatterns.map((pattern, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="text-blue-500 mt-0.5 flex-shrink-0">→</span>
+                        <p className="text-sm text-gray-300">{pattern}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* AI Recommendations */}
+              {aiInsights && (
+                <div className="lg:col-span-2 bg-[#0f172a] rounded-xl p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <h3 className="text-lg">AI-Powered Recommendations</h3>
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {aiInsights.recommendations.map((recommendation, index) => (
+                      <div key={index} className="bg-[#1a2333] rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                          <span className="text-green-500 text-xl flex-shrink-0">✓</span>
+                          <p className="text-sm text-gray-300">{recommendation}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* AI Predictions */}
+              {aiInsights && (
+                <div className="lg:col-span-2 bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-xl p-6">
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="w-5 h-5 text-blue-400 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg mb-2 font-medium">Future Predictions</h3>
+                      <p className="text-gray-300 text-sm leading-relaxed">{aiInsights.predictions}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
