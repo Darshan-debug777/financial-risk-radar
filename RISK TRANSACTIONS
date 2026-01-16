@@ -1,0 +1,329 @@
+import { LogOut, AlertTriangle, TrendingUp, Filter, Search, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
+interface FlaggedTransaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  category: string;
+  riskLevel: 'high' | 'medium' | 'low';
+  riskReasons: string[];
+  type: 'debit' | 'credit';
+}
+
+const flaggedTransactions: FlaggedTransaction[] = [
+  {
+    id: '1',
+    date: '15-06-2024',
+    description: 'Cash Withdrawal - ATM',
+    amount: -15000,
+    category: 'Cash Withdrawal',
+    riskLevel: 'high',
+    riskReasons: [
+      'Large cash withdrawal (33% of monthly income)',
+      'Multiple cash withdrawals in short period',
+      'No clear pattern of cash usage'
+    ],
+    type: 'debit'
+  },
+  {
+    id: '2',
+    date: '12-06-2024',
+    description: 'Online Gaming Platform',
+    amount: -8500,
+    category: 'Entertainment',
+    riskLevel: 'high',
+    riskReasons: [
+      'High-risk merchant category',
+      'Amount exceeds usual entertainment spending by 400%',
+      'Transaction made during late hours (2:30 AM)'
+    ],
+    type: 'debit'
+  },
+  {
+    id: '3',
+    date: '10-06-2024',
+    description: 'Cryptocurrency Exchange',
+    amount: -25000,
+    category: 'Investment',
+    riskLevel: 'high',
+    riskReasons: [
+      'High volatility investment',
+      'Amount is 55% of monthly income',
+      'No emergency fund detected',
+      'First-time crypto transaction'
+    ],
+    type: 'debit'
+  },
+  {
+    id: '4',
+    date: '08-06-2024',
+    description: 'Credit Card Payment Missed',
+    amount: -2500,
+    category: 'Late Fee',
+    riskLevel: 'medium',
+    riskReasons: [
+      'Late payment fee indicates missed deadline',
+      'Impacts credit score negatively',
+      'Pattern of delayed payments detected'
+    ],
+    type: 'debit'
+  },
+  {
+    id: '5',
+    date: '05-06-2024',
+    description: 'International Wire Transfer',
+    amount: -12000,
+    category: 'Transfer',
+    riskLevel: 'medium',
+    riskReasons: [
+      'Unusual international transaction',
+      'High transfer fees (₹850)',
+      'No prior international transfers in history'
+    ],
+    type: 'debit'
+  },
+  {
+    id: '6',
+    date: '03-06-2024',
+    description: 'Multiple Small Transactions',
+    amount: -4500,
+    category: 'Shopping',
+    riskLevel: 'medium',
+    riskReasons: [
+      '12 transactions under ₹500 in one day',
+      'Potential impulse buying pattern',
+      'Exceeds daily spending limit'
+    ],
+    type: 'debit'
+  },
+  {
+    id: '7',
+    date: '01-06-2024',
+    description: 'Subscription Renewal - Premium',
+    amount: -3999,
+    category: 'Subscription',
+    riskLevel: 'low',
+    riskReasons: [
+      'Premium tier subscription (cheaper alternatives available)',
+      'One of 8 active subscriptions',
+      'Annual commitment vs monthly flexibility'
+    ],
+    type: 'debit'
+  },
+  {
+    id: '8',
+    date: '28-05-2024',
+    description: 'Fine Dining Restaurant',
+    amount: -6800,
+    category: 'Dining',
+    riskLevel: 'low',
+    riskReasons: [
+      'Single transaction exceeds weekly food budget',
+      'Third high-value dining expense this month',
+      'Discretionary spending while savings rate is low'
+    ],
+    type: 'debit'
+  }
+];
+
+export default function RiskTransactions() {
+  const navigate = useNavigate();
+  const [filterLevel, setFilterLevel] = useState<'all' | 'high' | 'medium' | 'low'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredTransactions = flaggedTransactions.filter(transaction => {
+    const matchesFilter = filterLevel === 'all' || transaction.riskLevel === filterLevel;
+    const matchesSearch = transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          transaction.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const getRiskColor = (level: string) => {
+    switch (level) {
+      case 'high': return 'bg-red-500/20 text-red-500 border-red-500';
+      case 'medium': return 'bg-orange-500/20 text-orange-500 border-orange-500';
+      case 'low': return 'bg-yellow-500/20 text-yellow-500 border-yellow-500';
+      default: return 'bg-gray-500/20 text-gray-500 border-gray-500';
+    }
+  };
+
+  const getRiskBadgeColor = (level: string) => {
+    switch (level) {
+      case 'high': return 'bg-red-600';
+      case 'medium': return 'bg-orange-600';
+      case 'low': return 'bg-yellow-600';
+      default: return 'bg-gray-600';
+    }
+  };
+
+  const highRiskCount = flaggedTransactions.filter(t => t.riskLevel === 'high').length;
+  const mediumRiskCount = flaggedTransactions.filter(t => t.riskLevel === 'medium').length;
+  const lowRiskCount = flaggedTransactions.filter(t => t.riskLevel === 'low').length;
+  const totalFlagged = flaggedTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+  return (
+    <div className="min-h-screen bg-[#0a0f1e] text-white">
+      {/* Header */}
+      <div className="flex justify-between items-center px-6 py-4 bg-[#0f172a]">
+        <h1 className="text-lg">Financial Risk Radar</h1>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className="text-blue-500 hover:text-blue-400 transition-colors text-sm flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </button>
+          <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <div className="p-8">
+        {/* Page Header */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <AlertTriangle className="w-8 h-8 text-red-500" />
+            <h2 className="text-3xl">Flagged Transactions</h2>
+          </div>
+          <p className="text-gray-400 text-sm">Review transactions that have been flagged for potential financial risks</p>
+        </div>
+
+        {/* Summary Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-[#0f172a] rounded-xl p-6">
+            <p className="text-sm text-gray-400 mb-2">Total Flagged</p>
+            <p className="text-3xl mb-1">{flaggedTransactions.length}</p>
+            <p className="text-xs text-gray-500">₹{totalFlagged.toLocaleString()} at risk</p>
+          </div>
+          <div className="bg-[#0f172a] rounded-xl p-6">
+            <p className="text-sm text-gray-400 mb-2">High Risk</p>
+            <p className="text-3xl text-red-500">{highRiskCount}</p>
+            <p className="text-xs text-gray-500">Immediate attention needed</p>
+          </div>
+          <div className="bg-[#0f172a] rounded-xl p-6">
+            <p className="text-sm text-gray-400 mb-2">Medium Risk</p>
+            <p className="text-3xl text-orange-500">{mediumRiskCount}</p>
+            <p className="text-xs text-gray-500">Monitor closely</p>
+          </div>
+          <div className="bg-[#0f172a] rounded-xl p-6">
+            <p className="text-sm text-gray-400 mb-2">Low Risk</p>
+            <p className="text-3xl text-yellow-500">{lowRiskCount}</p>
+            <p className="text-xs text-gray-500">Review when possible</p>
+          </div>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="bg-[#0f172a] rounded-xl p-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Search */}
+            <div className="flex-1 relative">
+              <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search transactions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#1a2333] text-white pl-10 pr-4 py-2 rounded-lg border border-gray-700 focus:border-blue-600 focus:outline-none"
+              />
+            </div>
+
+            {/* Risk Level Filter */}
+            <div className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-gray-400" />
+              <select
+                value={filterLevel}
+                onChange={(e) => setFilterLevel(e.target.value as any)}
+                className="bg-[#1a2333] text-white px-4 py-2 rounded-lg border border-gray-700 focus:border-blue-600 focus:outline-none"
+              >
+                <option value="all">All Risks</option>
+                <option value="high">High Risk</option>
+                <option value="medium">Medium Risk</option>
+                <option value="low">Low Risk</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Transactions List */}
+        <div className="space-y-4">
+          {filteredTransactions.map((transaction) => (
+            <div
+              key={transaction.id}
+              className={`bg-[#0f172a] rounded-xl p-6 border-l-4 ${getRiskColor(transaction.riskLevel)}`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-lg">{transaction.description}</h3>
+                    <span className={`${getRiskBadgeColor(transaction.riskLevel)} text-white text-xs px-3 py-1 rounded-full uppercase`}>
+                      {transaction.riskLevel} Risk
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-400">
+                    <span>{transaction.date}</span>
+                    <span>•</span>
+                    <span>{transaction.category}</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl text-red-500">-₹{Math.abs(transaction.amount).toLocaleString()}</p>
+                </div>
+              </div>
+
+              {/* Risk Reasons */}
+              <div className="bg-[#1a2333] rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                  <p className="text-sm font-medium">Risk Indicators</p>
+                </div>
+                <ul className="space-y-2">
+                  {transaction.riskReasons.map((reason, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm text-gray-300">
+                      <span className="text-red-500 mt-0.5">•</span>
+                      <span>{reason}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredTransactions.length === 0 && (
+          <div className="bg-[#0f172a] rounded-xl p-12 text-center">
+            <AlertTriangle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-400">No transactions found matching your filters</p>
+          </div>
+        )}
+
+        {/* Action Banner */}
+        <div className="mt-6 bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-xl p-6">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-3">
+              <TrendingUp className="w-5 h-5 text-blue-400 mt-1" />
+              <div>
+                <h3 className="text-lg mb-2">Improve Your Financial Health</h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  Review these flagged transactions and take action to reduce your financial risk score. 
+                  Consider setting up spending alerts and budget limits.
+                </p>
+                <button 
+                  onClick={() => navigate('/insights')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors text-sm"
+                >
+                  View AI Recommendations
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
