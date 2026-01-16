@@ -1,0 +1,102 @@
+date,description,amount,type
+2025-01-01,Client Payment A,52000,credit
+2025-01-01,Coffee Expense,120,debit
+2025-01-02,Office Rent,12000,debit
+2025-01-02,Software Subscription,3200,debit
+2025-01-03,Client Payment B,75000,credit
+2025-01-03,Internet Bill,1500,debit
+2025-01-04,Electricity Bill,4200,debit
+2025-01-04,Consulting Income,30000,credit
+2025-01-05,Office Supplies,800,debit
+2025-01-05,Client Refund,5000,debit
+2025-01-06,Cloud Services,9000,debit
+2025-01-06,Client Payment C,45000,credit
+2025-01-07,Travel Expense,7800,debit
+2025-01-07,Client Payment D,60000,credit
+2025-01-08,Equipment Purchase,85000,debit
+2025-01-08,Client Payment E,95000,credit
+2025-01-09,Marketing Spend,12000,debit
+2025-01-09,Freelancer Payout,7000,debit
+2025-01-10,Consulting Income,40000,credit
+2025-01-10,Team Lunch,3200,debit
+2025-01-11,Client Payment F,30000,credit
+2025-01-11,Office Rent,12000,debit
+2025-01-12,Domain Renewal,900,debit
+2025-01-12,Hosting Bill,2500,debit
+2025-01-13,Client Payment G,82000,credit
+2025-01-13,Petty Cash Deposit,4000,credit
+2025-01-14,Payroll Salary,65000,debit
+2025-01-14,Client Payment H,50000,credit
+2025-01-15,Internet Bill,1600,debit
+2025-01-15,GST Payment,18000,debit
+2025-01-16,Client Payment I,72000,credit
+2025-01-16,Travel Expense,9800,debit
+2025-01-17,Office Snacks,700,debit
+2025-01-17,Client Payment J,35000,credit
+2025-01-18,Legal Fees,30000,debit
+2025-01-18,Client Payment K,93000,credit
+2025-01-19,Software Tools,4000,debit
+2025-01-19,Insurance Premium,24000,debit
+2025-01-20,Consulting Income,28000,credit
+2025-01-20,Client Refund,3000,debit
+2025-01-21,Loan EMI,45000,debit
+2025-01-21,Client Payment L,70000,credit
+2025-01-22,Cloud Services,11000,debit
+2025-01-22,Client Payment M,25000,credit
+2025-01-23,Office Rent,12000,debit
+2025-01-23,Client Payment N,52000,credit
+2025-01-24,Advertising Spend,30000,debit
+2025-01-24,Client Payment O,64000,credit
+2025-01-25,Office Furniture,98000,debit
+2025-01-25,Client Payment P,120000,credit
+2025-01-26,Client Refund,9000,debit
+2025-01-26,Electricity Bill,4300,debit
+2025-01-27,Client Payment Q,58000,credit
+2025-01-27,Stationery,600,debit
+2025-01-28,Team Bonus,40000,debit
+2025-01-28,Client Payment R,76000,credit
+2025-01-29,Travel Expense,22000,debit
+2025-01-29,Client Payment S,34000,credit
+2025-01-30,Consulting Income,27000,credit
+2025-01-30,Accounting Fees,13000,debit
+2025-01-31,Server Upgrade,88000,debit
+2025-02-01,Client Payment T,150000,credit
+2025-02-01,Office Rent,12000,debit
+2025-02-02,Small Expense,200,debit
+2025-02-02,Client Payment U,56000,credit
+2025-02-03,Internet Bill,1700,debit
+2025-02-03,Client Payment V,43000,credit
+2025-02-04,Training Program,35000,debit
+2025-02-04,Client Payment W,90000,credit
+2025-02-05,Medical Insurance,30000,debit
+2025-02-05,Client Payment X,82000,credit
+2025-02-06,Travel Expense,15000,debit
+2025-02-06,Client Payment Y,60000,credit
+2025-02-07,Office Renovation,125000,debit
+2025-02-07,Client Payment Z,170000,credit
+2025-02-08,Courier Charges,900,debit
+2025-02-08,Client Refund,6000,debit
+2025-02-09,Client Payment AA,48000,credit
+2025-02-09,Office Supplies,2200,debit
+2025-02-10,Client Payment AB,66000,credit
+2025-02-10,Software Subscription,5000,debit
+2025-02-11,Client Payment AC,72000,credit
+2025-02-11,Electricity Bill,4500,debit
+2025-02-12,Loan EMI,45000,debit
+2025-02-12,Consulting Income,90000,credit
+2025-02-13,Marketing Spend,50000,debit
+2025-02-13,Client Payment AD,110000,credit
+2025-02-14,Travel Expense,6000,debit
+2025-02-14,Client Payment AE,30000,credit
+2025-02-15,Office Rent,12000,debit
+2025-02-15,Client Payment AF,54000,credit
+2025-02-16,Training Fees,18000,debit
+2025-02-16,Client Payment AG,95000,credit
+2025-02-17,GST Payment,35000,debit
+2025-02-17,Client Payment AH,40000,credit
+2025-02-18,Cloud Services,12000,debit
+2025-02-18,Client Payment AI,87000,credit
+2025-02-19,Office Snacks,500,debit
+2025-02-19,Client Payment AJ,38000,credit
+2025-02-20,Team Dinner,9000,debit
+2025-02-20,Client Payment AK,102000,credit
