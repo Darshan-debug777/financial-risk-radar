@@ -1,0 +1,374 @@
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
+import { Toaster } from '@/app/components/ui/sonner';
+
+export default function App() {
+  const [isSignIn, setIsSignIn] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [dob, setDob] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({ 
+    email: '', 
+    password: '', 
+    name: '', 
+    dob: '' 
+  });
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateAge = (dateOfBirth: string) => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      return age - 1;
+    }
+    return age;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Reset errors
+    setErrors({ email: '', password: '', name: '', dob: '' });
+    
+    // Validation
+    let hasErrors = false;
+    const newErrors = { email: '', password: '', name: '', dob: '' };
+    
+    if (isSignIn) {
+      // Sign In validation
+      if (!email) {
+        newErrors.email = 'Email is required';
+        hasErrors = true;
+      } else if (!validateEmail(email)) {
+        newErrors.email = 'Please enter a valid email address';
+        hasErrors = true;
+      }
+      
+      if (!password) {
+        newErrors.password = 'Password is required';
+        hasErrors = true;
+      } else if (password.length < 6) {
+        newErrors.password = 'Password must be at least 6 characters';
+        hasErrors = true;
+      }
+    } else {
+      // Create Account validation
+      if (!name.trim()) {
+        newErrors.name = 'Name is required';
+        hasErrors = true;
+      } else if (name.trim().length < 2) {
+        newErrors.name = 'Name must be at least 2 characters';
+        hasErrors = true;
+      }
+      
+      if (!email) {
+        newErrors.email = 'Email is required';
+        hasErrors = true;
+      } else if (!validateEmail(email)) {
+        newErrors.email = 'Please enter a valid email address';
+        hasErrors = true;
+      }
+      
+      if (!dob) {
+        newErrors.dob = 'Date of birth is required';
+        hasErrors = true;
+      } else {
+        const age = validateAge(dob);
+        if (age < 13) {
+          newErrors.dob = 'You must be at least 13 years old';
+          hasErrors = true;
+        } else if (age > 120) {
+          newErrors.dob = 'Please enter a valid date of birth';
+          hasErrors = true;
+        }
+      }
+      
+      if (!password) {
+        newErrors.password = 'Password is required';
+        hasErrors = true;
+      } else if (password.length < 8) {
+        newErrors.password = 'Password must be at least 8 characters';
+        hasErrors = true;
+      }
+    }
+    
+    if (hasErrors) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    // Simulate API call
+    setIsLoading(true);
+    
+    try {
+      // Mock API call - simulating a delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      if (isSignIn) {
+        // Simulate successful login
+        toast.success('Login successful!', {
+          description: 'Welcome back to Financial Risk Radar',
+        });
+        console.log('Login successful:', { email, password: '***' });
+      } else {
+        // Simulate successful account creation
+        toast.success('Account created successfully!', {
+          description: 'Welcome to Financial Risk Radar',
+        });
+        console.log('Account created:', { name, email, dob, password: '***' });
+        
+        // Switch to sign in view after successful registration
+        setTimeout(() => {
+          setIsSignIn(true);
+          setPassword('');
+        }, 2000);
+      }
+      
+    } catch (error) {
+      toast.error(isSignIn ? 'Login failed' : 'Registration failed', {
+        description: 'Please check your information and try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    if (!email) {
+      toast.info('Enter your email', {
+        description: 'Please enter your email address to reset your password.',
+      });
+      return;
+    }
+    
+    if (!validateEmail(email)) {
+      toast.error('Invalid email', {
+        description: 'Please enter a valid email address.',
+      });
+      return;
+    }
+    
+    toast.success('Password reset email sent!', {
+      description: `We've sent a password reset link to ${email}`,
+    });
+  };
+
+  const toggleMode = () => {
+    setIsSignIn(!isSignIn);
+    setErrors({ email: '', password: '', name: '', dob: '' });
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#1a1f2e] flex items-center justify-center p-4">
+      <Toaster position="top-right" />
+      
+      <div className="w-full max-w-md">
+        <div className="text-center mb-12">
+          <h1 className="text-white text-2xl mb-2">Financial Risk Radar</h1>
+          <p className="text-gray-400 text-sm">Understand your financial risk</p>
+        </div>
+        
+        <div className="space-y-8">
+          <h2 className="text-white text-xl text-center">
+            {isSignIn ? 'Sign in to your account' : 'Create your account'}
+          </h2>
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Name Field - Only for Create Account */}
+            {!isSignIn && (
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-gray-300 text-sm block">
+                  Full Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (errors.name) setErrors({ ...errors, name: '' });
+                  }}
+                  className={`w-full bg-[#2a3142] text-white px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                    errors.name ? 'ring-2 ring-red-500' : ''
+                  }`}
+                  placeholder="John Doe"
+                  disabled={isLoading}
+                />
+                {errors.name && (
+                  <p className="text-red-400 text-xs mt-1">{errors.name}</p>
+                )}
+              </div>
+            )}
+            
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-gray-300 text-sm block">
+                Email ID
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors({ ...errors, email: '' });
+                }}
+                className={`w-full bg-[#2a3142] text-white px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                  errors.email ? 'ring-2 ring-red-500' : ''
+                }`}
+                placeholder="your.email@example.com"
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+              )}
+            </div>
+            
+            {/* Date of Birth Field - Only for Create Account */}
+            {!isSignIn && (
+              <div className="space-y-2">
+                <label htmlFor="dob" className="text-gray-300 text-sm block">
+                  Date of Birth
+                </label>
+                <input
+                  id="dob"
+                  type="date"
+                  value={dob}
+                  onChange={(e) => {
+                    setDob(e.target.value);
+                    if (errors.dob) setErrors({ ...errors, dob: '' });
+                  }}
+                  max={new Date().toISOString().split('T')[0]}
+                  className={`w-full bg-[#2a3142] text-white px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                    errors.dob ? 'ring-2 ring-red-500' : ''
+                  }`}
+                  disabled={isLoading}
+                />
+                {errors.dob && (
+                  <p className="text-red-400 text-xs mt-1">{errors.dob}</p>
+                )}
+              </div>
+            )}
+            
+            {/* Password Field */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-gray-300 text-sm block">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors({ ...errors, password: '' });
+                  }}
+                  className={`w-full bg-[#2a3142] text-white px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all pr-12 ${
+                    errors.password ? 'ring-2 ring-red-500' : ''
+                  }`}
+                  placeholder={isSignIn ? 'Enter your password' : 'Create a strong password'}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-red-400 text-xs mt-1">{errors.password}</p>
+              )}
+            </div>
+            
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {isLoading ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  {isSignIn ? 'Signing In...' : 'Creating Account...'}
+                </>
+              ) : (
+                isSignIn ? 'Sign In' : 'Create Account'
+              )}
+            </button>
+            
+            {/* Forgot Password Link - Only for Sign In */}
+            {isSignIn && (
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                  disabled={isLoading}
+                >
+                  Forgot Password?
+                </button>
+              </div>
+            )}
+          </form>
+          
+          {/* Toggle between Sign In and Create Account */}
+          <div className="text-center">
+            <p className="text-gray-400 text-sm">
+              {isSignIn ? "Don't have an account? " : 'Already have an account? '}
+              <button
+                onClick={toggleMode}
+                className="text-blue-400 hover:text-blue-300 transition-colors"
+                disabled={isLoading}
+              >
+                {isSignIn ? 'Create Account' : 'Sign In'}
+              </button>
+            </p>
+          </div>
+          
+          {/* Security Message */}
+          <p className="text-gray-500 text-xs text-center mt-6">
+            Your data is encrypted and never shared
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
