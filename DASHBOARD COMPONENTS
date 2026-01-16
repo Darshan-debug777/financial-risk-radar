@@ -1,0 +1,211 @@
+import { TrendingUp, TrendingDown, AlertCircle, ArrowDownRight } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { useNavigate } from 'react-router-dom';
+
+// Risk Overview Card Component
+export function RiskOverviewCard() {
+  return (
+    <div>
+      <p className="text-sm text-gray-400 mb-4">Risk Overview</p>
+      <div className="bg-[#0f172a] rounded-xl p-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="text-6xl mb-4">72 / 100</div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-red-600 text-white text-xs px-3 py-1 rounded-full">High Risk</span>
+            </div>
+            <p className="text-sm mb-2">Grade: B-</p>
+            <p className="text-sm text-gray-400">Elevated risk due to high EMI burden and low savings runway</p>
+          </div>
+          <AlertCircle className="w-8 h-8 text-red-500" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Metrics Grid Component
+export function MetricsGrid() {
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <div className="bg-[#0f172a] rounded-xl p-6">
+        <p className="text-sm text-gray-400 mb-2">EMI / Income</p>
+        <div className="flex items-end justify-between">
+          <p className="text-4xl">63%</p>
+          <TrendingUp className="w-6 h-6 text-red-500" />
+        </div>
+        <p className="text-xs text-red-500 mt-2">↑ 5% from last month</p>
+      </div>
+      <div className="bg-[#0f172a] rounded-xl p-6">
+        <p className="text-sm text-gray-400 mb-2">Savings Rate</p>
+        <div className="flex items-end justify-between">
+          <p className="text-4xl">8%</p>
+          <TrendingDown className="w-6 h-6 text-red-500" />
+        </div>
+        <p className="text-xs text-red-500 mt-2">↓ 3% from last month</p>
+      </div>
+      <div className="bg-[#0f172a] rounded-xl p-6">
+        <p className="text-sm text-gray-400 mb-2">Monthly Burn</p>
+        <div className="flex items-end justify-between">
+          <p className="text-4xl">₹42,000</p>
+          <TrendingUp className="w-6 h-6 text-orange-500" />
+        </div>
+        <p className="text-xs text-orange-500 mt-2">↑ ₹2,500 from last month</p>
+      </div>
+      <div className="bg-[#0f172a] rounded-xl p-6">
+        <p className="text-sm text-gray-400 mb-2">Cash Runway</p>
+        <div className="flex items-end justify-between">
+          <p className="text-4xl">1.8 months</p>
+          <TrendingDown className="w-6 h-6 text-red-500" />
+        </div>
+        <p className="text-xs text-red-500 mt-2">↓ 0.5 months</p>
+      </div>
+    </div>
+  );
+}
+
+// Balance Trend Chart Component
+export function BalanceTrendChart() {
+  const monthlyTrend = [
+    { month: 'Jan', balance: 48000 },
+    { month: 'Feb', balance: 52000 },
+    { month: 'Mar', balance: 45000 },
+    { month: 'Apr', balance: 41000 },
+    { month: 'May', balance: 38000 },
+    { month: 'Jun', balance: 35000 },
+  ];
+
+  return (
+    <div className="bg-[#0f172a] rounded-xl p-6">
+      <h3 className="text-lg mb-6">Balance Trend (Last 6 Months)</h3>
+      <ResponsiveContainer width="100%" height={250}>
+        <LineChart data={monthlyTrend}>
+          <XAxis 
+            dataKey="month" 
+            stroke="#6b7280"
+            tick={{ fill: '#9ca3af' }}
+          />
+          <YAxis 
+            stroke="#6b7280"
+            tick={{ fill: '#9ca3af' }}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: '#1a2333', 
+              border: 'none',
+              borderRadius: '8px',
+              color: '#fff'
+            }}
+          />
+          <Line 
+            type="monotone" 
+            dataKey="balance" 
+            stroke="#ef4444" 
+            strokeWidth={2}
+            dot={{ fill: '#ef4444', r: 4 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+      <div className="mt-4 flex items-center gap-2 text-sm">
+        <ArrowDownRight className="w-4 h-4 text-red-500" />
+        <span className="text-red-500">-27% decline in the last 6 months</span>
+      </div>
+    </div>
+  );
+}
+
+// Recent Transactions Component
+export function RecentTransactions() {
+  const navigate = useNavigate();
+  
+  const recentTransactions = [
+    { id: 1, description: 'Salary - June', amount: 45000, type: 'credit', date: '01 Jun' },
+    { id: 2, description: 'Rent Payment', amount: -18000, type: 'debit', date: '02 Jun' },
+    { id: 3, description: 'Credit Card EMI', amount: -12500, type: 'debit', date: '04 Jun' },
+    { id: 4, description: 'Grocery Store', amount: -3450, type: 'debit', date: '07 Jun' },
+    { id: 5, description: 'Mutual Fund SIP', amount: -5000, type: 'debit', date: '08 Jun' },
+  ];
+
+  return (
+    <div className="bg-[#0f172a] rounded-xl p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg">Recent Transactions</h3>
+        <button 
+          onClick={() => navigate('/risk-transactions')}
+          className="text-xs text-red-500 hover:text-red-400 transition-colors flex items-center gap-1"
+        >
+          <AlertCircle className="w-3 h-3" />
+          8 Flagged
+        </button>
+      </div>
+      <div className="space-y-3">
+        {recentTransactions.map((transaction) => (
+          <div key={transaction.id} className="flex items-center justify-between py-2 border-b border-gray-800 last:border-0">
+            <div className="flex-1">
+              <p className="text-sm text-gray-300">{transaction.description}</p>
+              <p className="text-xs text-gray-500">{transaction.date}</p>
+            </div>
+            <p className={`text-sm font-medium ${transaction.type === 'credit' ? 'text-green-500' : 'text-red-500'}`}>
+              {transaction.type === 'credit' ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString()}
+            </p>
+          </div>
+        ))}
+      </div>
+      <button className="w-full mt-4 text-sm text-blue-500 hover:text-blue-400 transition-colors">
+        View All Transactions →
+      </button>
+    </div>
+  );
+}
+
+// Quick Actions Component
+export function QuickActions() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="bg-[#0f172a] rounded-xl p-6">
+      <h3 className="text-lg mb-4">Quick Actions</h3>
+      <div className="space-y-2">
+        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors text-sm text-left">
+          Upload New Statement
+        </button>
+        <button 
+          onClick={() => navigate('/risk-transactions')}
+          className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-500 border border-red-500/30 px-4 py-3 rounded-lg transition-colors text-sm text-left flex items-center justify-between"
+        >
+          <span>View Flagged Transactions</span>
+          <span className="bg-red-600 text-white text-xs px-2 py-1 rounded-full">8</span>
+        </button>
+        <button className="w-full bg-[#1a2333] hover:bg-[#243447] text-white px-4 py-3 rounded-lg transition-colors text-sm text-left">
+          Set Budget Goals
+        </button>
+        <button className="w-full bg-[#1a2333] hover:bg-[#243447] text-white px-4 py-3 rounded-lg transition-colors text-sm text-left">
+          Export Report
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Alert Box Component
+export function AlertBox() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="bg-gradient-to-br from-red-900/30 to-orange-900/30 border border-red-500/30 rounded-xl p-6">
+      <div className="flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
+        <div>
+          <p className="text-sm font-medium mb-1">Action Required</p>
+          <p className="text-xs text-gray-400 mb-3">Your expenses are exceeding income. Review your spending patterns in AI Insights.</p>
+          <button 
+            onClick={() => navigate('/risk-transactions')}
+            className="text-xs text-red-400 hover:text-red-300 underline"
+          >
+            View 8 flagged transactions →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
