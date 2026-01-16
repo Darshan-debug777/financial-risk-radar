@@ -1,0 +1,53 @@
+import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  RiskOverviewCard, 
+  MetricsGrid, 
+  BalanceTrendChart, 
+  RecentTransactions, 
+  QuickActions, 
+  AlertBox 
+} from './DashboardComponents';
+
+export default function Dashboard() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-[#0a0f1e] text-white">
+      {/* Header */}
+      <div className="flex justify-between items-center px-6 py-4 bg-[#0f172a]">
+        <h1 className="text-lg">Financial Risk Radar</h1>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => navigate('/insights')}
+            className="text-blue-500 hover:text-blue-400 transition-colors text-sm"
+          >
+            View AI Insights →
+          </button>
+          <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <div className="p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            <RiskOverviewCard />
+            <MetricsGrid />
+            <BalanceTrendChart />
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            <RecentTransactions />
+            <QuickActions />
+            <AlertBox />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
